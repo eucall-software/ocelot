@@ -7,7 +7,7 @@ from ocelot.common.globals import *
 
 '''
 Note:
-(A) the reference frame (e.g. co-moving or not with the beam is not fixed) 
+(A) the reference frame (e.g. co-moving or not with the beam is not fixed)
 (B) xp, yp are in [rad] but the meaning is not specified
 '''
 
@@ -95,7 +95,7 @@ class Twiss:
         val += "s        = " + str(self.s) + "\n"
         return val
 
-            
+
 class Particle:
     '''
     particle
@@ -105,7 +105,7 @@ class Particle:
         self.x = x
         self.y = y
         self.px = px       # horizontal (generalized) momentum
-        self.py = py       # vertical (generalized) momentum 
+        self.py = py       # vertical (generalized) momentum
         self.p = p         # longitudinal momentum
         self.s = s
         self.tau = tau     # time-like coordinate wrt reference particle in the bunch (e.g phase)
@@ -135,7 +135,7 @@ class Beam:
         self.sigma_E = 0.0      # Energy spread [GeV]
         self.I = 0.0            # beam current [A]
         self.emit_x = 0.0       # horizontal emittance [m rad]
-        self.emit_y = 0.0       # horizontal emittance [m rad]
+        self.emit_y = 0.0       # vertical emittance [m rad]
         self.tlen = 0.0         # bunch length (rms) in fsec
 
         # twiss parameters
@@ -194,7 +194,7 @@ class Trajectory:
 
     def last(self):
         p = Particle()
-        
+
         p.ct = self.ct[len(self.ct)-1]
         p.x = self.x[len(self.x)-1]
         p.y = self.y[len(self.y)-1]
