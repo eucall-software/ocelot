@@ -1,7 +1,6 @@
 '''
 functions common to fel decks
 '''
-
 # import scipy.special as sf
 # import scipy.integrate as integrate
 # from numpy.polynomial.chebyshev import *
@@ -20,7 +19,7 @@ from ocelot.common.math_op import *
 from ocelot.adaptors.genesis import *
 
 import multiprocessing
-import pyfftw
+#import pyfftw
 nthread = multiprocessing.cpu_count()
 
 
@@ -48,13 +47,13 @@ def dfl_prop(dfl, z, fine=1, debug=1):
     Fourier propagator for fieldfile
 
     can handle wide spectrum
-      (every slice in freq.domain is propagated 
+      (every slice in freq.domain is propagated
        according to its frequency)
     no kx**2+ky**2<<k0**2 limitation
 
     dfl is the RadiationField() object
-    z is the propagation distance in [m] 
-    fine==0 is a flag for ~2x faster propagation. 
+    z is the propagation distance in [m]
+    fine==0 is a flag for ~2x faster propagation.
         no Fourier transform to frequency domain is done
         assumes no angular dispersion (true for plain FEL radiation)
         assumes narrow spectrum at center of xlamds (true for plain FEL radiation)
@@ -106,7 +105,7 @@ def dfl_prop(dfl, z, fine=1, debug=1):
 
 def dfl_waistscan(dfl, z_pos, projection=0, debug=1):
     '''
-    propagates the RadaitionField object dfl 
+    propagates the RadaitionField object dfl
     through the sequence of positions z_pos
     and calculates transverse distribution parameters
     such as peak photon density and sizes in both dimentions
@@ -159,13 +158,13 @@ def dfl_waistscan(dfl, z_pos, projection=0, debug=1):
 
 
 def dfl_interp(dfl, interpN=(1, 1), interpL=(1, 1), newN=(None, None), newL=(None, None), method='cubic', debug=1):
-    ''' 
-    2d interpolation of the coherent radiation distribution 
-    interpN and interpL define the desired interpolation coefficients for  
-    transverse point __density__ and transverse mesh __size__ correspondingly 
-    newN and newL define the final desire number of points and size of the mesh 
-    when newN and newL are not None interpN and interpL values are ignored 
-    coordinate convention is (x,y) 
+    '''
+    2d interpolation of the coherent radiation distribution
+    interpN and interpL define the desired interpolation coefficients for
+    transverse point __density__ and transverse mesh __size__ correspondingly
+    newN and newL define the final desire number of points and size of the mesh
+    when newN and newL are not None interpN and interpL values are ignored
+    coordinate convention is (x,y)
     '''
     from scipy.interpolate import interp2d
 
@@ -206,7 +205,7 @@ def dfl_interp(dfl, interpN=(1, 1), interpL=(1, 1), newN=(None, None), newL=(Non
         elif interpNx == 1 and interpNy == 1 and interpLx == 1 and interpLy == 1:
             return dfl
             print('      skip (no interpolation required, returning original)')
-        
+
         # elif interpNx == 1 and interpNy == 1 and interpLx <= 1 and interpLy <= 1:
             # implement pad or cut if Lx1/Nx1==Lx2/Nx2 and Ly1/Ny1==Ly2/Ny2:
             # print('      cutting original')
@@ -216,23 +215,23 @@ def dfl_interp(dfl, interpN=(1, 1), interpL=(1, 1), newN=(None, None), newL=(Non
             # nx2=int(Nx1-(Nx1-Nx2)/2)
             # dfl.fld=dfl.fld[:,ny1:ny2,nx1:nx2]
             # return dfl
-        
+
         else:
-            
+
             Nx2 = int(dfl.Nx() * interpNx * interpLx)
             if Nx2 % 2 == 0 and Nx2 > dfl.Nx():
                 Nx2 -= 1
             if Nx2 % 2 == 0 and Nx2 < dfl.Nx():
                 Nx2 += 1
-            
-            
+
+
             Ny2 = int(dfl.Ny() * interpNy * interpLy)
             if Ny2 % 2 == 0 and Ny2 > dfl.Ny():
                 Ny2 -= 1
             if Ny2 % 2 == 0 and Ny2 < dfl.Ny():
                 Ny2 += 1
 
-            
+
             Lx2 = dfl.Lx() * interpLx
             Ly2 = dfl.Ly() * interpLy
 
@@ -257,14 +256,14 @@ def dfl_interp(dfl, interpN=(1, 1), interpL=(1, 1), newN=(None, None), newL=(Non
             Ly2 = newL[1]
         else:
             Ly2 = dfl.Ly()
-    
+
     if debug>0:
         print('Lx1=%e, Ly1=%e' %(Lx1,Ly1))
         print('Lx2=%e, Ly2=%e' %(Lx2,Ly2))
         print('Nx1=%s, Ny1=%s' %(Nx1,Ny1))
         print('Nx2=%s, Ny2=%s' %(Nx2,Ny2))
-    
-    
+
+
     xscale1 = np.linspace(-dfl.Lx() / 2, dfl.Lx() / 2, dfl.Nx())
     yscale1 = np.linspace(-dfl.Ly() / 2, dfl.Ly() / 2, dfl.Ny())
     xscale2 = np.linspace(-Lx2 / 2, Lx2 / 2, Nx2)
@@ -288,12 +287,12 @@ def dfl_interp(dfl, interpN=(1, 1), interpL=(1, 1), newN=(None, None), newL=(Non
         P2 = sum(abs(fslice2)**2)
         if debug > 1:
             print('      P1,P2 = %e %e' %(P1,P2))
-        
+
         if P2!=0:
             fslice2 = fslice2 * sqrt(P1 / P2)
         else:
             fslice2 = fslice2 * 0
-        
+
         fld2.append(fslice2)
 
     dfl2 = deepcopy(dfl)
@@ -531,11 +530,11 @@ def dfl_hxrss_filt(dfl, trf, ev_seed, s_delay, st_cpl=1, enforce_padn=None, res_
     padn = np.ceil(dk_old / dk).astype(int)
     if np.mod(padn, 2) == 0 and padn != 0:  # check for odd
         padn = int(padn + 1)
-    
+
     if enforce_padn!=None:
         padn=enforce_padn
-        
-        
+
+
     if dump_proj:
 
         dfl = dfl_pad_z(dfl, padn)
